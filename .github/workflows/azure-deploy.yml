@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -21,16 +22,15 @@ jobs:
       - name: Restore dependencies
         run: dotnet restore
 
-      - name: Build with dotnet
+      - name: Build the project
         run: dotnet build --configuration Release --no-restore
 
-      - name: Publish with dotnet
-        run: dotnet publish -c Release -o ${{ env.DOTNET_ROOT }}/myapp --no-build
+      - name: Publish the project
+        run: dotnet publish -c Release -o myapp
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'SeminarHub-app'
-          slot-name: 'production'
+          app-name: SeminarHub-app
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-          package: ${{ env.DOTNET_ROOT }}/myapp
+          package: myapp

@@ -18,15 +18,19 @@ jobs:
         with:
           dotnet-version: '6.0.x'
 
+      - name: Restore dependencies
+        run: dotnet restore
+
       - name: Build with dotnet
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release --no-restore
 
       - name: Publish with dotnet
-        run: dotnet publish -c Release -o publish
+        run: dotnet publish -c Release -o ${{ env.DOTNET_ROOT }}/myapp --no-build
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
-          app-name: SeminarHub-app
+          app-name: 'SeminarHub-app'
+          slot-name: 'production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-          package: ./publish
+          package: ${{ env.DOTNET_ROOT }}/myapp
